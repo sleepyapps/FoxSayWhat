@@ -1,0 +1,128 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:gravity="center"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:src="@drawable/fox5" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" >
+
+        <Button
+            android:id="@+id/wapapow"
+            android:background="@drawable/foxybutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/ringding"
+            android:layout_below="@+id/ringding"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/buttonTextColor" 
+            android:text="Wa-pa-pow" />
+
+        <Button
+            android:id="@+id/hateeho"
+            android:background="@drawable/foxybutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/wapapow"
+            android:layout_below="@+id/wapapow"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/buttonTextColor" 
+            android:text="Hatee-ho" />
+
+        <Button
+            android:id="@+id/jofftchoff"
+            android:background="@drawable/foxybutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hateeho"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/buttonTextColor" 
+            android:text="Joff-tchoff" />
+
+        <Button
+            android:id="@+id/frakakow"
+            android:background="@drawable/foxybutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/wapapow"
+            android:layout_alignRight="@+id/jachachow"
+            android:textColor="@color/buttonTextColor" 
+            android:text="Fraka-kow" />
+
+        <Button
+            android:id="@+id/aheeahee"
+            android:background="@drawable/foxybutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/hateeho"
+            android:layout_alignRight="@+id/frakakow"
+            android:textColor="@color/buttonTextColor" 
+            android:text="Ahee-ahee" />
+
+        <Button
+            android:id="@+id/aooooo"
+            android:background="@drawable/foxybutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/jofftchoff"
+            android:layout_alignRight="@+id/aheeahee"
+            android:textColor="@color/buttonTextColor" 
+            android:text="A-oo-oo-oo" />
+
+        <Button
+            android:id="@+id/jachachow"
+            android:background="@drawable/foxybutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/wapapow"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/buttonTextColor" 
+            android:text="Jacha-chow" />
+
+        <Button
+            android:id="@+id/ringding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/foxybutton"
+            android:text="Ring-ding-ding"
+            android:textColor="@color/buttonTextColor" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/wabeddybombom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/foxybutton"
+        android:text="Wabeddy-bom-bom-bay-dum"
+        android:textColor="@color/buttonTextColor" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/imageView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp"
+        android:src="@drawable/title2" />
+
+</RelativeLayout>
