@@ -1,9 +1,11 @@
 package com.sleepyapps.foxsaywhat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -118,6 +120,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+		builder.setMessage("This soundboard created in honor of the song 'The Fox' by Ylvis. See the original video posted by tvnorge on Youtube: http://www.youtube.com/watch?v=jofNR_WkoCE");
+		builder.show();
+	    return true;
 	}
 
 }
