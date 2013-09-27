@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -107,13 +111,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		mediaPlayer = MediaPlayer.create(this, clip);
 		mediaPlayer.start();
 	}
-	
-   public void onDestroy() {
-
-	    //mediaPlayer.stop();
-	    super.onDestroy();
-
-	}
 	   
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -124,9 +121,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-		builder.setMessage("This soundboard created in honor of the song 'The Fox' by Ylvis. See the original video posted by tvnorge on Youtube: http://www.youtube.com/watch?v=jofNR_WkoCE");
-		builder.show();
+		// Linkify the message
+	    final SpannableString s = new SpannableString("This soundboard created in honor of the song 'The Fox' by Ylvis. See the original video posted by tvnorge: http://www.youtube.com/watch?v=jofNR_WkoCE");
+	    Linkify.addLinks(s, Linkify.ALL);
+
+	    final TextView input = new TextView(MainActivity.this);
+	    final AlertDialog d = new AlertDialog.Builder(MainActivity.this)
+	        .setMessage( s )
+	        .setTitle("Ring-ding-ding")
+	        .setPositiveButton("Fraka-kow", null)
+	        .create();
+	    d.show();
+
+	    // Make the textview clickable. Must be called after show()
+	    ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
+
 	    return true;
 	}
 

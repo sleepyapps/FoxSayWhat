@@ -35,9 +35,10 @@ public final class R {
         public static final int title2=0x7f020006;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a000c;
+        public static final int action_settings=0x7f0a000d;
         public static final int aheeahee=0x7f0a0008;
         public static final int aooooo=0x7f0a0009;
+        public static final int disclaimerDialog=0x7f0a000c;
         public static final int frakakow=0x7f0a0006;
         public static final int hateeho=0x7f0a0004;
         public static final int imageView1=0x7f0a0000;
@@ -51,6 +52,7 @@ public final class R {
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
+        public static final int dialog_layout=0x7f030001;
     }
     public static final class menu {
         public static final int main=0x7f090000;
