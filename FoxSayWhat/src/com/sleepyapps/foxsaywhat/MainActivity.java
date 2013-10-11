@@ -1,9 +1,23 @@
 package com.sleepyapps.foxsaywhat;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -12,8 +26,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener, View.OnLongClickListener {
 
 	MediaPlayer mediaPlayer = null;
 	Button aheeahee;
@@ -25,7 +40,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	Button ringding;
 	Button wabeddybombom;
 	Button wapapow;
+	String location = Environment.DIRECTORY_RINGTONES;
+	String isType = MediaStore.Audio.Media.IS_RINGTONE;
+	int type = RingtoneManager.TYPE_RINGTONE;
 	
+	String name;
+	
+	final CharSequence[] saveSoundOptions = {"Ringtone", "Notification", "Alarm"};
+	 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -33,31 +55,39 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		
 		aheeahee = (Button) findViewById(R.id.aheeahee);
 		aheeahee.setOnClickListener(this);
-
+		aheeahee.setOnLongClickListener(this);
+		
 		aooooo = (Button) findViewById(R.id.aooooo);
 		aooooo.setOnClickListener(this);
+		aooooo.setOnLongClickListener(this);
 		
 		frakakow = (Button) findViewById(R.id.frakakow);
 		frakakow.setOnClickListener(this);
+		frakakow.setOnLongClickListener(this);
 		
 		hateeho = (Button) findViewById(R.id.hateeho);
 		hateeho.setOnClickListener(this);
+		hateeho.setOnLongClickListener(this);
 		
 		jachachow = (Button) findViewById(R.id.jachachow);
 		jachachow.setOnClickListener(this);
+		jachachow.setOnLongClickListener(this);
 		
 		jofftchoff = (Button) findViewById(R.id.jofftchoff);
 		jofftchoff.setOnClickListener(this);
+		jofftchoff.setOnLongClickListener(this);
 		
 		ringding = (Button) findViewById(R.id.ringding);
 		ringding.setOnClickListener(this);
+		ringding.setOnLongClickListener(this);
 		
 		wabeddybombom = (Button) findViewById(R.id.wabeddybombom);
 		wabeddybombom.setOnClickListener(this);
+		wabeddybombom.setOnLongClickListener(this);
 		
 		wapapow = (Button) findViewById(R.id.wapapow);
 		wapapow.setOnClickListener(this);
-		
+		wapapow.setOnLongClickListener(this);
 	}
 
 	public void onClick(View v)
@@ -112,6 +142,140 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		mediaPlayer.start();
 	}
 	   
+	public void saveSoundClip(final int clip) {
+		if(isExternalStorageWritable()){
+			name = this.getResources().getResourceEntryName(clip) + ".mp3";
+
+     	   
+		    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			   
+		    builder.setTitle("Save this foxy sound as:")
+		           .setSingleChoiceItems(saveSoundOptions, -1, new DialogInterface.OnClickListener() {
+		               public void onClick(DialogInterface dialog, int which) {
+
+		            	   if(which == 0){
+		            		   location = Environment.DIRECTORY_RINGTONES;
+		            		   isType = MediaStore.Audio.Media.IS_RINGTONE;
+		            		   type = RingtoneManager.TYPE_RINGTONE;
+		            	   }
+		            	   else if(which == 1){
+		            		   location = Environment.DIRECTORY_NOTIFICATIONS;
+		            		   isType = MediaStore.Audio.Media.IS_NOTIFICATION;
+		            		   type = RingtoneManager.TYPE_NOTIFICATION;
+		            	   }
+		            	   else{
+		            		   location = Environment.DIRECTORY_ALARMS;
+		            		   isType = MediaStore.Audio.Media.IS_ALARM;
+		            		   type = RingtoneManager.TYPE_ALARM;
+		            	   }
+		               }
+		           })
+		           .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+		               @Override
+		               public void onClick(DialogInterface dialog, int id) {
+		            	    File file = new File(Environment.getExternalStoragePublicDirectory(
+		            	            location), name);
+		            	    
+		            	    boolean saved = saveToSD(file, clip);
+		            	    String msg;
+		            	    if(saved){
+		            	    	msg = name + " successfully saved";
+		            	    }
+		            	    else{
+		            	    	msg = "Error saving " + name;
+		            	    }
+		            	    
+		            	    Toast toast = Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT);
+		            	    toast.show();
+		               }
+		           })
+		           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		               @Override
+		               public void onClick(DialogInterface dialog, int id) {
+		                   
+		               }
+		           });
+		    builder.show();
+		}
+		else{
+    	    Toast toast = Toast.makeText(MainActivity.this, "SD card not available", Toast.LENGTH_SHORT);
+    	    toast.show();
+		}
+	}
+	
+	public boolean saveToSD(File file, int clip){
+		
+		Uri mUri = Uri.parse("android.resource://com.sleepyapps.foxsaywhat/" + clip);
+		ContentResolver mCr = this.getContentResolver();
+		AssetFileDescriptor soundFile;
+		try {
+		       soundFile= mCr.openAssetFileDescriptor(mUri, "r");
+		   } catch (FileNotFoundException e) {
+		       soundFile=null;   
+		   }
+
+		   try {
+		      byte[] readData = new byte[1024];
+		      FileInputStream fis = soundFile.createInputStream();
+		      FileOutputStream fos = new FileOutputStream(file);
+		      int i = fis.read(readData);
+
+		      while (i != -1) {
+		        fos.write(readData, 0, i);
+		        i = fis.read(readData);
+		      }
+
+		      fos.close();
+		   } catch (IOException io) {
+			   return false;
+		   }
+		
+//		
+//		byte[] buffer=null;
+//		InputStream fIn = getBaseContext().getResources().openRawResource(clip);
+//		int size=0;
+//		
+//		try {
+//			 size = fIn.available();
+//			 buffer = new byte[size];
+//			 fIn.read(buffer);
+//			 fIn.close();
+//		} catch (IOException e) {
+//			return false;
+//		}
+//		
+//		FileOutputStream save;
+//		try {
+//			 save = new FileOutputStream(file);
+//			 save.write(buffer);
+//			 save.flush();
+//			 save.close();
+//		} catch (FileNotFoundException e) {
+//			return false;
+//		} catch (IOException e) {
+//		     return false;
+//		}    
+		
+	   ContentValues values = new ContentValues();
+	   values.put(MediaStore.MediaColumns.DATA, file.getAbsolutePath());
+	   values.put(MediaStore.MediaColumns.TITLE, name);
+	   values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mp3");
+	   values.put(MediaStore.MediaColumns.SIZE, file.length());
+	   values.put(MediaStore.Audio.Media.ARTIST, R.string.app_name);
+	   values.put(isType, true);
+	   values.put(MediaStore.Audio.Media.IS_MUSIC, false);
+	
+	   Uri uri = MediaStore.Audio.Media.getContentUriForPath(file.getAbsolutePath());
+	   Uri newUri = MainActivity.this.getContentResolver().insert(uri, values);
+	   try {
+	       RingtoneManager.setActualDefaultRingtoneUri(MainActivity.this, type, newUri);
+	   } catch (Throwable t) {
+	       return false;
+	   }
+	   
+	   return true;
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -138,5 +302,59 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	    return true;
 	}
+
+	@Override
+	public boolean onLongClick(View v) {
+		if (v instanceof Button) 
+		{
+			final Button button = ((Button) v);
+			int id = button.getId();
+
+			switch (id)
+			{
+			case R.id.aheeahee:
+				saveSoundClip(R.raw.aheeahee);
+				break;
+			case R.id.aooooo:
+				saveSoundClip(R.raw.aooooo);
+				break;
+			case R.id.frakakow:
+				saveSoundClip(R.raw.frakakow);
+				break;
+			case R.id.hateeho:
+				saveSoundClip(R.raw.hateeho);
+				break;
+			case R.id.jachachow:
+				saveSoundClip(R.raw.jachachow);
+				break;
+			case R.id.jofftchoff:
+				saveSoundClip(R.raw.jofftchoff);
+				break;
+			case R.id.ringding:
+				saveSoundClip(R.raw.ringding);
+				break;
+			case R.id.wabeddybombom:
+				saveSoundClip(R.raw.wabeddybombom);
+				break;
+			case R.id.wapapow:
+				saveSoundClip(R.raw.wapapow);
+				break;
+			default:
+				break;
+			}
+			
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isExternalStorageWritable() {
+	    String state = Environment.getExternalStorageState();
+	    if (Environment.MEDIA_MOUNTED.equals(state)) {
+	        return true;
+	    }
+	    return false;
+	}
+
 
 }
