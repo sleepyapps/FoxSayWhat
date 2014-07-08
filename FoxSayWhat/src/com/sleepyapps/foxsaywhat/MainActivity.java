@@ -1,26 +1,37 @@
 package com.sleepyapps.foxsaywhat;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +39,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 public class MainActivity extends Activity implements View.OnClickListener, View.OnLongClickListener {
 
@@ -95,8 +110,79 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 		title = (ImageView) findViewById(R.id.titleImage);
 		title.setOnClickListener(this);
 		title.setOnLongClickListener(this);
+		
+		initTenjin();
 	}
 
+	public void initTenjin()
+	{
+		new Thread(new Runnable() {
+			public void run() 
+			{
+				try
+				{
+					AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(MainActivity.this);
+					String advertisingID = adInfo.getId();
+					Context context = getApplicationContext();
+				 
+					BufferedReader rd = null;
+					StringBuilder sb = null;
+					String line = null;
+					
+					if (adInfo != null && !TextUtils.isEmpty(advertisingID))
+					{
+						// Tenjin Testing
+						String url = "http://track-staging.tenjin.io/v0/event?";
+						
+						Map<String, String> params = new HashMap<String, String>();
+						params.put("bundle_id", getPackageName());
+						params.put("advertising_id", advertisingID);
+						params.put("platform", "android");
+						params.put("limit_ad_tracking", adInfo.isLimitAdTrackingEnabled() ? "1" : "0");
+						params.put("os_version", Build.VERSION.RELEASE);
+						params.put("app_version", context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName + "." + context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode);
+						String paramString = convertURLParams(params, true);
+						
+						String header = "Authorization";
+						String value = "Basic " + Base64.encodeToString(("RKTQZ5TD3NV4HSZZOXVTGJHBJWLQTJOM" + ":" + "").getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+				 
+						Map<String, String> headers = new HashMap<String, String>();
+						headers.put(header, value);
+						
+						Log.i("TEST", url+paramString);
+						URL requestURL = new URL(url + paramString);
+						
+						HttpURLConnection connection = (HttpURLConnection) requestURL.openConnection();
+						connection.setConnectTimeout(15000);
+						connection.setReadTimeout(30000);
+						connection.setRequestProperty(header, value);
+						connection.setRequestMethod("GET");
+						connection.connect();
+						
+						int statusCode = connection.getResponseCode();
+						
+						// Read the result from the server.
+						rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				
+						sb = new StringBuilder();
+						
+						while ((line = rd.readLine()) != null)
+						{
+							sb.append(line + '\n');
+						}
+					
+						String response = sb.toString();
+						Log.i("TEST", response);
+						//new HTTPConnection().connect(url, params, headers, null, HTTPConnection.TYPE_GET);
+					}
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+	
 	public void onClick(View v)
 	{
 		if (v instanceof Button) 
@@ -372,5 +458,22 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 	    return false;
 	}
 
-
+	private String convertURLParams(Map <String, String> source, boolean encode)
+	{
+		String result = "";
+		
+		for (Map.Entry<String, String> entry : source.entrySet())
+		{
+			// Add ampersand if this is not the first entry.
+			if (result.length() > 0)
+				result += "&";
+			
+			if (encode)
+				result += Uri.encode(entry.getKey()) + "=" + Uri.encode(entry.getValue());
+			else
+				result += entry.getKey() + "=" + entry.getValue();
+		}
+				
+		return result;
+	}
 }
