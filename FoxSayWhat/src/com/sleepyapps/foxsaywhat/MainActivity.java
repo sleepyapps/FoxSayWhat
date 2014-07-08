@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 	Button ringding;
 	Button wabeddybombom;
 	Button wapapow;
+	ImageView title;
+	
 	String location = Environment.DIRECTORY_RINGTONES;
 	String isType = MediaStore.Audio.Media.IS_RINGTONE;
 	int type = RingtoneManager.TYPE_RINGTONE;
@@ -88,6 +91,10 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 		wapapow = (Button) findViewById(R.id.wapapow);
 		wapapow.setOnClickListener(this);
 		wapapow.setOnLongClickListener(this);
+		
+		title = (ImageView) findViewById(R.id.titleImage);
+		title.setOnClickListener(this);
+		title.setOnLongClickListener(this);
 	}
 
 	public void onClick(View v)
@@ -129,6 +136,10 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 			default:
 				break;
 			}
+		}
+		else if(v instanceof ImageView && (v.getId() == R.id.titleImage))
+		{
+			playSoundClip(R.raw.whatthefoxsay);
 		}
 	}
 	
@@ -343,6 +354,11 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 				break;
 			}
 			
+			return true;
+		}
+		else if(v instanceof ImageView && (v.getId() == R.id.titleImage))
+		{
+			saveSoundClip(R.raw.whatthefoxsay);
 			return true;
 		}
 		return false;
