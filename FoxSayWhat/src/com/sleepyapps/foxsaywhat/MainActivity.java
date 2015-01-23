@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.tenjin.android.TenjinSDK;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -281,6 +283,16 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		//Integrate TenjinSDK
+		String apiKey = "X6SJQRU3UE3PXWJDEQB2S17GE7YZ3SQ7";
+		TenjinSDK instance = TenjinSDK.getInstance(this, apiKey);
+		instance.connect();
 	}
 	
 	@Override
