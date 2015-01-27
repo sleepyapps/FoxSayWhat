@@ -12,6 +12,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tenjin.android.TenjinSDK;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -110,77 +112,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 		title = (ImageView) findViewById(R.id.titleImage);
 		title.setOnClickListener(this);
 		title.setOnLongClickListener(this);
-		
-		initTenjin();
-	}
-
-	public void initTenjin()
-	{
-		new Thread(new Runnable() {
-			public void run() 
-			{
-				try
-				{
-					AdvertisingIdClient.Info adInfo = AdvertisingIdClient.getAdvertisingIdInfo(MainActivity.this);
-					String advertisingID = adInfo.getId();
-					Context context = getApplicationContext();
-				 
-					BufferedReader rd = null;
-					StringBuilder sb = null;
-					String line = null;
-					
-					if (adInfo != null && !TextUtils.isEmpty(advertisingID))
-					{
-						// Tenjin Testing
-						String url = "http://track-staging.tenjin.io/v0/event?";
-						
-						Map<String, String> params = new HashMap<String, String>();
-						params.put("bundle_id", getPackageName());
-						params.put("advertising_id", advertisingID);
-						params.put("platform", "android");
-						params.put("limit_ad_tracking", adInfo.isLimitAdTrackingEnabled() ? "1" : "0");
-						params.put("os_version", Build.VERSION.RELEASE);
-						params.put("app_version", context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName + "." + context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode);
-						String paramString = convertURLParams(params, true);
-						
-						String header = "Authorization";
-						String value = "Basic " + Base64.encodeToString(("RKTQZ5TD3NV4HSZZOXVTGJHBJWLQTJOM" + ":" + "").getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
-				 
-						Map<String, String> headers = new HashMap<String, String>();
-						headers.put(header, value);
-						
-						Log.i("TEST", url+paramString);
-						URL requestURL = new URL(url + paramString);
-						
-						HttpURLConnection connection = (HttpURLConnection) requestURL.openConnection();
-						connection.setConnectTimeout(15000);
-						connection.setReadTimeout(30000);
-						connection.setRequestProperty(header, value);
-						connection.setRequestMethod("GET");
-						connection.connect();
-						
-						int statusCode = connection.getResponseCode();
-						
-						// Read the result from the server.
-						rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				
-						sb = new StringBuilder();
-						
-						while ((line = rd.readLine()) != null)
-						{
-							sb.append(line + '\n');
-						}
-					
-						String response = sb.toString();
-						Log.i("TEST", response);
-						//new HTTPConnection().connect(url, params, headers, null, HTTPConnection.TYPE_GET);
-					}
-				}
-				catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-		}).start();
 	}
 	
 	public void onClick(View v)
@@ -378,6 +309,16 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+		//Integrate TenjinSDK
+		String apiKey = "X6SJQRU3UE3PXWJDEQB2S17GE7YZ3SQ7";
+		TenjinSDK instance = TenjinSDK.getInstance(this, apiKey);
+		instance.connect();
 	}
 	
 	@Override
