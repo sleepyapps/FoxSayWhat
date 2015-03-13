@@ -73,8 +73,6 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Log.d("REF", "hello");
-		
 		aheeahee = (Button) findViewById(R.id.aheeahee);
 		aheeahee.setOnClickListener(this);
 		aheeahee.setOnLongClickListener(this);
