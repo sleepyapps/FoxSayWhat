@@ -314,9 +314,11 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 	@Override
 	public void onResume() {
 		super.onResume();
+
+        Log.d("REF", "onResume from the app.");
 		
 		//Integrate TenjinSDK
-		String apiKey = "X6SJQRU3UE3PXWJDEQB2S17GE7YZ3SQ7";
+		String apiKey = "YWZKFWDZEREQCFMF3DST3AYHZPCC9MWV";
 		TenjinSDK instance = TenjinSDK.getInstance(this, apiKey);
 		instance.connect();
 	}
