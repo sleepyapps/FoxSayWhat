@@ -321,6 +321,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 		String apiKey = "YWZKFWDZEREQCFMF3DST3AYHZPCC9MWV";
 		TenjinSDK instance = TenjinSDK.getInstance(this, apiKey);
 		instance.connect();
+		instance.eventWithName("started_app");
+		instance.eventWithNameAndValue("session", "1");
 	}
 	
 	@Override
